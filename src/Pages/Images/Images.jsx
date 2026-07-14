@@ -16,6 +16,7 @@ import {
 } from "react-icons/hi";
 import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
+import { uploadToStorage } from "../../lib/upload";
 
 const EMPTY_FORM = { name: "", alt: "", tags: "" };
 const ALLOWED = [
@@ -25,7 +26,6 @@ const ALLOWED = [
   "image/webp",
   "image/svg+xml",
 ];
-const MAX_SIZE = 5 * 1024 * 1024;
 
 const Images = () => {
   const { user } = useAuth();
@@ -41,6 +41,7 @@ const Images = () => {
   const [filterTag, setFilterTag] = useState("");
   const [search, setSearch] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Upload state
   const [inputMode, setInputMode] = useState("file");
@@ -128,10 +129,6 @@ const Images = () => {
       toast.error("Only JPEG, PNG, GIF, WebP, SVG allowed");
       return false;
     }
-    if (f.size > MAX_SIZE) {
-      toast.error("File must be under 5MB");
-      return false;
-    }
     return true;
   };
 
@@ -165,28 +162,18 @@ const Images = () => {
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  // ── Upload file, then create image ──
-  const uploadFile = async () => {
-    const fd = new FormData();
-    fd.append("files", file);
-    const { data } = await app.post("upload", fd, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-    if (!data.success) throw new Error(data.message);
-    return data.files[0].url;
-  };
-
   // ── Submit (create / update) ──
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setUploadProgress(0);
 
     try {
       let imageUrl = urlInput.trim();
 
       if (inputMode === "file" && file) {
         toast.info("Uploading image...");
-        imageUrl = await uploadFile();
+        imageUrl = await uploadToStorage(app, file, setUploadProgress);
       }
 
       if (!imageUrl) {
@@ -225,6 +212,7 @@ const Images = () => {
       toast.error(err.response?.data?.message || "Something went wrong");
     } finally {
       setSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -504,23 +492,39 @@ const Images = () => {
             {inputMode === "file" && (
               <div className="form-control">
                 {filePreview ? (
-                  <div className="relative rounded-xl overflow-hidden bg-base-300">
-                    <img
-                      src={filePreview}
-                      alt="Selected"
-                      className="w-full h-48 object-contain"
-                    />
-                    <button
-                      type="button"
-                      className="btn btn-circle btn-sm btn-error absolute top-2 right-2"
-                      onClick={clearFile}
-                    >
-                      <HiX className="text-lg" />
-                    </button>
-                    <div className="p-2 text-xs text-base-content/60 truncate">
-                      {file?.name} ({(file?.size / 1024).toFixed(0)} KB)
+                  <>
+                    <div className="relative rounded-xl overflow-hidden bg-base-300">
+                      <img
+                        src={filePreview}
+                        alt="Selected"
+                        className="w-full h-48 object-contain"
+                      />
+                      {!submitting && (
+                        <button
+                          type="button"
+                          className="btn btn-circle btn-sm btn-error absolute top-2 right-2"
+                          onClick={clearFile}
+                        >
+                          <HiX className="text-lg" />
+                        </button>
+                      )}
+                      {submitting && uploadProgress > 0 && (
+                        <div className="absolute top-2 right-2 bg-base-200/90 rounded-lg px-2 py-1 text-xs font-medium">
+                          {uploadProgress}%
+                        </div>
+                      )}
+                      <div className="p-2 text-xs text-base-content/60 truncate">
+                        {file?.name} ({(file?.size / 1024).toFixed(0)} KB)
+                      </div>
                     </div>
-                  </div>
+                    {submitting && uploadProgress > 0 && (
+                      <progress
+                        className="progress progress-primary w-full mt-2"
+                        value={uploadProgress}
+                        max="100"
+                      />
+                    )}
+                  </>
                 ) : (
                   <div
                     onDrop={onDrop}
@@ -543,7 +547,7 @@ const Images = () => {
                         {dragging ? "Drop here" : "Click or drag to upload"}
                       </p>
                       <p className="text-xs text-base-content/50 mt-1">
-                        JPEG, PNG, GIF, WebP, SVG — max 5MB
+                        JPEG, PNG, GIF, WebP, SVG
                       </p>
                     </div>
                     <input
