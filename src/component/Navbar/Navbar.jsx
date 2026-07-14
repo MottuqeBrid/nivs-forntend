@@ -42,6 +42,9 @@ const Navbar = () => {
         { to: "/files", label: "Files", icon: HiDocumentText },
       );
     }
+    if (!loading && user?.role === "admin") {
+      links.splice(1, 0, { to: "/admin", label: "Admin", icon: HiCog });
+    }
 
     if (!loading && !user) {
       links.push({ to: "/login", label: "Login", icon: HiLogin });

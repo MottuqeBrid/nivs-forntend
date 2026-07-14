@@ -60,31 +60,66 @@ const ALLOWED = [
 
 const getFileIcon = (name, type) => {
   const ext = name?.split(".").pop()?.toLowerCase() || "";
-  if (type?.startsWith("image/") || ["jpg","jpeg","png","gif","webp","svg","bmp","ico"].includes(ext))
+  if (
+    type?.startsWith("image/") ||
+    ["jpg", "jpeg", "png", "gif", "webp", "svg", "bmp", "ico"].includes(ext)
+  )
     return HiPhotograph;
-  if (type?.startsWith("video/") || ["mp4","webm","mov","avi","mkv"].includes(ext))
+  if (
+    type?.startsWith("video/") ||
+    ["mp4", "webm", "mov", "avi", "mkv"].includes(ext)
+  )
     return HiVideoCamera;
-  if (type?.startsWith("audio/") || ["mp3","wav","ogg","flac","aac"].includes(ext))
+  if (
+    type?.startsWith("audio/") ||
+    ["mp3", "wav", "ogg", "flac", "aac"].includes(ext)
+  )
     return HiMusicNote;
   if (["pdf"].includes(ext)) return HiDocumentText;
-  if (["js","jsx","ts","tsx","html","css","py","java","cpp","c","go","rs","php","rb","sh","json","xml","yaml","yml","toml"].includes(ext))
+  if (
+    [
+      "js",
+      "jsx",
+      "ts",
+      "tsx",
+      "html",
+      "css",
+      "py",
+      "java",
+      "cpp",
+      "c",
+      "go",
+      "rs",
+      "php",
+      "rb",
+      "sh",
+      "json",
+      "xml",
+      "yaml",
+      "yml",
+      "toml",
+    ].includes(ext)
+  )
     return HiCode;
-  if (["zip","rar","7z","gz","tar","bz2"].includes(ext)) return HiArchive;
+  if (["zip", "rar", "7z", "gz", "tar", "bz2"].includes(ext)) return HiArchive;
   return HiDocument;
 };
 
 const getFileColor = (name, type) => {
   const ext = name?.split(".").pop()?.toLowerCase() || "";
-  if (type?.startsWith("image/") || ["jpg","jpeg","png","gif","webp","svg"].includes(ext))
+  if (
+    type?.startsWith("image/") ||
+    ["jpg", "jpeg", "png", "gif", "webp", "svg"].includes(ext)
+  )
     return "text-success";
-  if (type?.startsWith("video/") || ["mp4","webm","mov"].includes(ext))
+  if (type?.startsWith("video/") || ["mp4", "webm", "mov"].includes(ext))
     return "text-error";
-  if (type?.startsWith("audio/") || ["mp3","wav","ogg"].includes(ext))
+  if (type?.startsWith("audio/") || ["mp3", "wav", "ogg"].includes(ext))
     return "text-secondary";
   if (["pdf"].includes(ext)) return "text-error";
-  if (["js","jsx","ts","tsx"].includes(ext)) return "text-warning";
-  if (["py","java","cpp","go","rs"].includes(ext)) return "text-info";
-  if (["zip","rar","7z","gz"].includes(ext)) return "text-accent";
+  if (["js", "jsx", "ts", "tsx"].includes(ext)) return "text-warning";
+  if (["py", "java", "cpp", "go", "rs"].includes(ext)) return "text-info";
+  if (["zip", "rar", "7z", "gz"].includes(ext)) return "text-accent";
   return "text-base-content/60";
 };
 
@@ -100,7 +135,35 @@ const isPreviewable = (name, type) => {
   if (type?.startsWith("image/")) return true;
   if (type?.startsWith("video/")) return true;
   if (["pdf"].includes(ext)) return true;
-  if (type?.startsWith("text/") || ["json","js","jsx","ts","tsx","html","css","py","java","cpp","xml","yaml","yml","md","sh","sql","csv","log","env","gitignore","toml","cfg","ini","txt"].includes(ext))
+  if (
+    type?.startsWith("text/") ||
+    [
+      "json",
+      "js",
+      "jsx",
+      "ts",
+      "tsx",
+      "html",
+      "css",
+      "py",
+      "java",
+      "cpp",
+      "xml",
+      "yaml",
+      "yml",
+      "md",
+      "sh",
+      "sql",
+      "csv",
+      "log",
+      "env",
+      "gitignore",
+      "toml",
+      "cfg",
+      "ini",
+      "txt",
+    ].includes(ext)
+  )
     return true;
   return false;
 };
@@ -142,7 +205,10 @@ const Files = () => {
   }, [app]);
 
   useEffect(() => {
-    fetchFiles();
+    const fun = () => {
+      fetchFiles();
+    };
+    fun();
   }, [fetchFiles]);
 
   // ── Derived data ──
@@ -568,7 +634,9 @@ const Files = () => {
                       {(() => {
                         const Icon = getFileIcon(fileName);
                         const color = getFileColor(fileName);
-                        return <Icon className={`text-3xl shrink-0 ${color}`} />;
+                        return (
+                          <Icon className={`text-3xl shrink-0 ${color}`} />
+                        );
                       })()}
                       <div className="flex-1 truncate">
                         <p className="font-medium truncate">{fileName}</p>
@@ -765,12 +833,15 @@ const Files = () => {
             </button>
 
             {(() => {
-              const ext = previewFile.name?.split(".").pop()?.toLowerCase() || "";
-              const type = previewFile.url;
+              const ext =
+                previewFile.name?.split(".").pop()?.toLowerCase() || "";
+              // const type = previewFile.url;
 
               // Image preview
               if (
-                previewFile.url.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?|$)/i)
+                previewFile.url.match(
+                  /\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?|$)/i,
+                )
               ) {
                 return (
                   <figure className="rounded-xl overflow-hidden">
@@ -784,9 +855,7 @@ const Files = () => {
               }
 
               // Video preview
-              if (
-                previewFile.url.match(/\.(mp4|webm|ogg|mov|avi)(\?|$)/i)
-              ) {
+              if (previewFile.url.match(/\.(mp4|webm|ogg|mov|avi)(\?|$)/i)) {
                 return (
                   <video
                     src={previewFile.url}
