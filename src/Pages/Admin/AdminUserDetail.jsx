@@ -64,6 +64,7 @@ const AdminUserDetail = () => {
   }, [app, id]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUser();
   }, [fetchUser]);
 
@@ -81,6 +82,7 @@ const AdminUserDetail = () => {
   }, [app, id, activeTab]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchItems();
   }, [activeTab, id, fetchItems]);
 

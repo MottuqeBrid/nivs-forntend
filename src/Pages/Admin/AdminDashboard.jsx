@@ -53,12 +53,15 @@ const AdminDashboard = () => {
   }, [app]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchData();
   }, [fetchData]);
 
   // Derived stats
   const activeUsers = data.users.filter((u) => !u.isDeleted).length;
+  // eslint-disable-next-line no-unused-vars
   const deletedUsers = data.users.filter((u) => u.isDeleted).length;
+  // eslint-disable-next-line no-unused-vars
   const adminUsers = data.users.filter((u) => u.role === "admin").length;
   const deletedImages = data.images.filter((i) => i.isDeleted).length;
   const deletedVideos = data.videos.filter((v) => v.isDeleted).length;
@@ -212,7 +215,9 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <p className="text-sm text-base-content/60">Active Users</p>
-                <p className="text-2xl font-bold">{loading ? "..." : activeUsers}</p>
+                <p className="text-2xl font-bold">
+                  {loading ? "..." : activeUsers}
+                </p>
               </div>
             </div>
           </div>
@@ -225,7 +230,9 @@ const AdminDashboard = () => {
               </div>
               <div>
                 <p className="text-sm text-base-content/60">Deleted Items</p>
-                <p className="text-2xl font-bold">{loading ? "..." : totalDeleted}</p>
+                <p className="text-2xl font-bold">
+                  {loading ? "..." : totalDeleted}
+                </p>
               </div>
             </div>
           </div>
@@ -241,7 +248,9 @@ const AdminDashboard = () => {
                 <p className="text-2xl font-bold">
                   {loading
                     ? "..."
-                    : data.images.length + data.videos.length + data.files.length}
+                    : data.images.length +
+                      data.videos.length +
+                      data.files.length}
                 </p>
               </div>
             </div>
@@ -259,10 +268,7 @@ const AdminDashboard = () => {
                 <HiClock className="text-xl" />
                 Recent Uploads
               </h2>
-              <Link
-                to="/admin/uploads"
-                className="btn btn-ghost btn-xs gap-1"
-              >
+              <Link to="/admin/uploads" className="btn btn-ghost btn-xs gap-1">
                 View all
                 <HiArrowRight className="text-sm" />
               </Link>
@@ -321,10 +327,7 @@ const AdminDashboard = () => {
                 <HiUser className="text-xl" />
                 Recent Users
               </h2>
-              <Link
-                to="/admin/users"
-                className="btn btn-ghost btn-xs gap-1"
-              >
+              <Link to="/admin/users" className="btn btn-ghost btn-xs gap-1">
                 View all
                 <HiArrowRight className="text-sm" />
               </Link>
@@ -425,7 +428,7 @@ const AdminDashboard = () => {
                                 </span>
                               </div>
                             </div>
-                            <span className="text-sm truncate max-w-[120px]">
+                            <span className="text-sm truncate max-w-30">
                               {u.name}
                             </span>
                           </div>
@@ -500,9 +503,7 @@ const AdminDashboard = () => {
                         height: "2.5rem",
                       }}
                     >
-                      {Math.round(
-                        (u.count / (data.uploads.length || 1)) * 100,
-                      )}
+                      {Math.round((u.count / (data.uploads.length || 1)) * 100)}
                       %
                     </div>
                   </div>
