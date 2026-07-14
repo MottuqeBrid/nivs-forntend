@@ -3,9 +3,11 @@ import Navbar from "../component/Navbar/Navbar";
 
 const HomeLayout = () => {
   return (
-    <div className="mx-auto max-w-7xl min-h-screen">
+    <div className="min-h-screen">
       <Navbar />
-      <Outlet />
+      <main className="mx-auto max-w-7xl px-4">
+        <Outlet />
+      </main>
     </div>
   );
 };

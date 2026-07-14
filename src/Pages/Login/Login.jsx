@@ -16,12 +16,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    console.log("Submitting:", { email, password, rememberMe });
 
     try {
-      const { data } = await axiosInstance.post("user/login", {
+      const { data } = await axiosInstance.post("users/login", {
         email,
         password,
       });
+      console.log(data);
 
       if (data.success) {
         await login(data.token, rememberMe);
@@ -44,13 +46,13 @@ const Login = () => {
             Login
           </h2>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
             {/* Email */}
             <div className="form-control">
               <label className="label">
                 <span className="label-text font-medium">Email</span>
               </label>
-              <div className="input input-bordered flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary">
+              <div className="input input-bordered flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary w-full">
                 <HiMail className="text-lg opacity-60 shrink-0" />
                 <input
                   type="email"
@@ -68,7 +70,7 @@ const Login = () => {
               <label className="label">
                 <span className="label-text font-medium">Password</span>
               </label>
-              <div className="input input-bordered flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary">
+              <div className="input input-bordered flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary w-full">
                 <HiLockClosed className="text-lg opacity-60 shrink-0" />
                 <input
                   type="password"

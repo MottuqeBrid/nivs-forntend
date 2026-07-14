@@ -11,7 +11,7 @@ import axiosInstance from "../lib/axiosInstance";
 export const AuthContext = createContext(null);
 
 const fetchUser = async () => {
-  const { data } = await axiosInstance.get("user/me");
+  const { data } = await axiosInstance.get("users/me");
   return data.user;
 };
 
