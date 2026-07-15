@@ -4,31 +4,17 @@ const uploadImage = async (app, file, onProgress) => {
   const formData = new FormData();
   formData.append("files", file);
 
-  const url = await new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("POST", "upload");
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) {
+  const { data } = await app.post("upload", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+    onUploadProgress: (e) => {
+      if (e.total) {
         onProgress?.(Math.round((e.loaded / e.total) * 100));
       }
-    };
-    xhr.onload = () => {
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (xhr.status >= 200 && xhr.status < 300 && data.success) {
-          resolve(data.files[0].url);
-        } else {
-          reject(new Error(data.message || "Image upload failed"));
-        }
-      } catch {
-        reject(new Error("Invalid response from server"));
-      }
-    };
-    xhr.onerror = () => reject(new Error("Network error during upload"));
-    xhr.send(formData);
+    },
   });
 
-  return url;
+  if (!data.success) throw new Error(data.message || "Image upload failed");
+  return data.files[0].url;
 };
 
 const uploadFile = async (app, file, onProgress, typeOverride) => {
