@@ -7,6 +7,7 @@ import {
   HiPhotograph,
   HiVideoCamera,
   HiDocument,
+  HiDocumentText,
   HiHome,
 } from "react-icons/hi";
 
@@ -17,6 +18,7 @@ const navItems = [
   { to: "/admin/images", label: "Images", icon: HiPhotograph },
   { to: "/admin/videos", label: "Videos", icon: HiVideoCamera },
   { to: "/admin/files", label: "Files", icon: HiDocument },
+  { to: "/admin/notes", label: "Notes", icon: HiDocumentText },
 ];
 
 const AdminLayout = () => {

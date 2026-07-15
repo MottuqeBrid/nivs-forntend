@@ -14,6 +14,7 @@ import {
   HiUser,
   HiCog,
   HiLogout,
+  HiPencilAlt,
 } from "react-icons/hi";
 import logo from "../../assets/logo.png";
 import { useAuth } from "../../hooks/useAuth";
@@ -40,6 +41,7 @@ const Navbar = () => {
         { to: "/images", label: "Images", icon: HiPhotograph },
         { to: "/videos", label: "Videos", icon: HiVideoCamera },
         { to: "/files", label: "Files", icon: HiDocumentText },
+        { to: "/notes", label: "Notes", icon: HiPencilAlt },
       );
     }
     if (!loading && user?.role === "admin") {
@@ -162,13 +164,11 @@ const Navbar = () => {
           {!loading && user && (
             <div className="dropdown dropdown-end">
               <button
-                className="btn btn-ghost btn-circle avatar placeholder"
+                className="btn btn-ghost btn-circle avatar"
                 onClick={() => setUserMenuOpen((o) => !o)}
               >
-                <div className="bg-primary text-primary-content rounded-full w-9">
-                  <span className="text-sm font-semibold">
-                    {user.name?.charAt(0).toUpperCase() || "U"}
-                  </span>
+                <div className="rounded-full w-9">
+                  <img src="/profile.png" alt="Profile" />
                 </div>
               </button>
 
@@ -278,11 +278,9 @@ const Navbar = () => {
           {user && (
             <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-base-300/50">
               <div className="flex items-center gap-3 mb-3">
-                <div className="avatar placeholder">
-                  <div className="bg-primary text-primary-content rounded-full w-10">
-                    <span className="text-sm font-semibold">
-                      {user.name?.charAt(0).toUpperCase() || "U"}
-                    </span>
+                <div className="avatar">
+                  <div className="rounded-full w-10">
+                    <img src="/profile.png" alt="Profile" />
                   </div>
                 </div>
                 <div className="truncate">

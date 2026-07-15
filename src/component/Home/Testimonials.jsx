@@ -49,11 +49,9 @@ const Testimonials = () => {
               </div>
               <p className="text-sm text-base-content/70 mb-4">"{content}"</p>
               <div className="flex items-center gap-3">
-                <div className="avatar placeholder">
-                  <div className="bg-primary text-primary-content rounded-full w-10">
-                    <span className="text-sm font-bold">
-                      {name.charAt(0)}
-                    </span>
+                <div className="avatar">
+                  <div className="rounded-full w-10">
+                    <img src="/profile.png" alt="Profile" />
                   </div>
                 </div>
                 <div>

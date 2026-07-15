@@ -5,6 +5,7 @@ import {
   HiPhotograph,
   HiVideoCamera,
   HiDocument,
+  HiDocumentText,
   HiCloudUpload,
   HiArrowRight,
   HiTrash,
@@ -24,26 +25,33 @@ const AdminDashboard = () => {
     videos: [],
     files: [],
     uploads: [],
+    notes: [],
   });
   const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
-      const [usersRes, imagesRes, videosRes, filesRes, uploadsRes] =
-        await Promise.all([
-          app.get("admin"),
-          app.get("admin/all-images"),
-          app.get("admin/all-videos"),
-          app.get("admin/all-files"),
-          app.get("admin/uploads"),
-        ]);
+      const results = await Promise.allSettled([
+        app.get("admin"),
+        app.get("admin/all-images"),
+        app.get("admin/all-videos"),
+        app.get("admin/all-files"),
+        app.get("admin/uploads"),
+        app.get("admin/all-notes"),
+      ]);
+
+      const get = (i) =>
+        results[i].status === "fulfilled" && results[i].value.data.success
+          ? results[i].value.data.data
+          : [];
 
       setData({
-        users: usersRes.data.success ? usersRes.data.data : [],
-        images: imagesRes.data.success ? imagesRes.data.data : [],
-        videos: videosRes.data.success ? videosRes.data.data : [],
-        files: filesRes.data.success ? filesRes.data.data : [],
-        uploads: uploadsRes.data.success ? uploadsRes.data.data : [],
+        users: get(0),
+        images: get(1),
+        videos: get(2),
+        files: get(3),
+        uploads: get(4),
+        notes: get(5),
       });
     } catch (err) {
       console.error(err);
@@ -66,7 +74,8 @@ const AdminDashboard = () => {
   const deletedImages = data.images.filter((i) => i.isDeleted).length;
   const deletedVideos = data.videos.filter((v) => v.isDeleted).length;
   const deletedFiles = data.files.filter((f) => f.isDeleted).length;
-  const totalDeleted = deletedImages + deletedVideos + deletedFiles;
+  const deletedNotes = data.notes.filter((n) => n.isDeleted).length;
+  const totalDeleted = deletedImages + deletedVideos + deletedFiles + deletedNotes;
 
   // Recent uploads (last 5)
   const recentUploads = [...data.uploads]
@@ -97,10 +106,12 @@ const AdminDashboard = () => {
     images: u.images?.length || 0,
     videos: u.videos?.length || 0,
     files: u.files?.length || 0,
+    notes: u.notes?.length || 0,
     total:
       (u.images?.length || 0) +
       (u.videos?.length || 0) +
-      (u.files?.length || 0),
+      (u.files?.length || 0) +
+      (u.notes?.length || 0),
   }));
   const topContentUsers = [...userContent]
     .sort((a, b) => b.total - a.total)
@@ -142,6 +153,15 @@ const AdminDashboard = () => {
       color: "text-warning",
       bg: "bg-warning/10",
       to: "/admin/files",
+    },
+    {
+      label: "Notes",
+      value: data.notes.length,
+      sub: deletedNotes > 0 ? `${deletedNotes} deleted` : null,
+      icon: HiDocumentText,
+      color: "text-info",
+      bg: "bg-info/10",
+      to: "/admin/notes",
     },
     {
       label: "Uploads",
@@ -250,7 +270,8 @@ const AdminDashboard = () => {
                     ? "..."
                     : data.images.length +
                       data.videos.length +
-                      data.files.length}
+                      data.files.length +
+                      data.notes.length}
                 </p>
               </div>
             </div>
@@ -292,11 +313,9 @@ const AdminDashboard = () => {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {u.user && (
-                        <div className="avatar placeholder shrink-0">
-                          <div className="bg-primary text-primary-content rounded-full w-8">
-                            <span className="text-xs font-bold">
-                              {u.user.name?.charAt(0).toUpperCase() || "U"}
-                            </span>
+                        <div className="avatar shrink-0">
+                          <div className="rounded-full w-8">
+                            <img src="/profile.png" alt="Profile" />
                           </div>
                         </div>
                       )}
@@ -350,11 +369,9 @@ const AdminDashboard = () => {
                     className="flex items-center justify-between p-2 rounded-lg hover:bg-base-300 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="avatar placeholder shrink-0">
-                        <div className="bg-primary text-primary-content rounded-full w-8">
-                          <span className="text-xs font-bold">
-                            {u.name?.charAt(0).toUpperCase() || "U"}
-                          </span>
+                      <div className="avatar shrink-0">
+                        <div className="rounded-full w-8">
+                          <img src="/profile.png" alt="Profile" />
                         </div>
                       </div>
                       <div className="min-w-0">
@@ -413,6 +430,7 @@ const AdminDashboard = () => {
                       <th className="text-center">Images</th>
                       <th className="text-center">Videos</th>
                       <th className="text-center">Files</th>
+                      <th className="text-center">Notes</th>
                       <th className="text-center">Total</th>
                     </tr>
                   </thead>
@@ -421,11 +439,9 @@ const AdminDashboard = () => {
                       <tr key={i}>
                         <td>
                           <div className="flex items-center gap-2">
-                            <div className="avatar placeholder">
-                              <div className="bg-primary text-primary-content rounded-full w-7">
-                                <span className="text-xs font-bold">
-                                  {u.name?.charAt(0).toUpperCase() || "U"}
-                                </span>
+                            <div className="avatar">
+                              <div className="rounded-full w-7">
+                                <img src="/profile.png" alt="Profile" />
                               </div>
                             </div>
                             <span className="text-sm truncate max-w-30">
@@ -446,6 +462,11 @@ const AdminDashboard = () => {
                         <td className="text-center">
                           <span className="badge badge-warning badge-sm">
                             {u.files}
+                          </span>
+                        </td>
+                        <td className="text-center">
+                          <span className="badge badge-info badge-sm">
+                            {u.notes}
                           </span>
                         </td>
                         <td className="text-center font-bold">{u.total}</td>

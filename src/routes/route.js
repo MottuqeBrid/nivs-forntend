@@ -17,6 +17,8 @@ import AdminUploads from "../Pages/Admin/AdminUploads";
 import AdminImages from "../Pages/Admin/AdminImages";
 import AdminVideos from "../Pages/Admin/AdminVideos";
 import AdminFiles from "../Pages/Admin/AdminFiles";
+import AdminNotes from "../Pages/Admin/AdminNotes";
+import Notes from "../Pages/Notes/Notes";
 
 export const router = createBrowserRouter([
   {
@@ -27,6 +29,7 @@ export const router = createBrowserRouter([
       { path: "images", Component: Images },
       { path: "videos", Component: Videos },
       { path: "files", Component: Files },
+      { path: "notes", Component: Notes },
       { path: "login", Component: Login },
       { path: "signup", Component: SignUp },
       { path: "about", Component: About },
@@ -44,6 +47,7 @@ export const router = createBrowserRouter([
       { path: "images", Component: AdminImages },
       { path: "videos", Component: AdminVideos },
       { path: "files", Component: AdminFiles },
+      { path: "notes", Component: AdminNotes },
     ],
   },
   {

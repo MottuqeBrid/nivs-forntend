@@ -18,7 +18,6 @@ import {
   HiTrash,
   HiPencil,
   HiDocumentText,
-  HiTag,
   HiExclamationCircle,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
@@ -215,13 +214,11 @@ const AdminUserDetail = () => {
         <div className="card-body">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             {/* Avatar */}
-            <div className="avatar placeholder">
+            <div className="avatar">
               <div
-                className={`rounded-full w-24 ${user.isDeleted ? "bg-base-300" : "bg-primary text-primary-content"}`}
+                className={`rounded-full w-24 ${user.isDeleted ? "bg-base-300" : ""}`}
               >
-                <span className="text-4xl font-bold">
-                  {user.name?.charAt(0).toUpperCase() || "U"}
-                </span>
+                <img src="/profile.png" alt="Profile" />
               </div>
             </div>
 
@@ -345,7 +342,7 @@ const AdminUserDetail = () => {
               Content Summary
             </h2>
             <div className="divider my-0" />
-            <div className="grid grid-cols-3 gap-4 mt-2">
+            <div className="grid grid-cols-2 gap-4 mt-2">
               <div className="text-center p-4 bg-success/10 rounded-xl">
                 <HiPhotograph className="text-3xl text-success mx-auto mb-2" />
                 <p className="text-3xl font-bold">{user.images?.length || 0}</p>
@@ -361,15 +358,21 @@ const AdminUserDetail = () => {
                 <p className="text-3xl font-bold">{user.files?.length || 0}</p>
                 <p className="text-sm text-base-content/60">Files</p>
               </div>
+              <div className="text-center p-4 bg-primary/10 rounded-xl">
+                <HiDocumentText className="text-3xl text-primary mx-auto mb-2" />
+                <p className="text-3xl font-bold">{user.notes?.length || 0}</p>
+                <p className="text-sm text-base-content/60">Notes</p>
+              </div>
             </div>
             <div className="stat bg-base-300 rounded-xl p-4 mt-4">
               <div className="stat-title">Total Content</div>
               <div className="stat-value text-2xl">
                 {(user.images?.length || 0) +
                   (user.videos?.length || 0) +
-                  (user.files?.length || 0)}
+                  (user.files?.length || 0) +
+                  (user.notes?.length || 0)}
               </div>
-              <div className="stat-desc">images + videos + files</div>
+              <div className="stat-desc">images + videos + files + notes</div>
             </div>
           </div>
         </div>
@@ -445,19 +448,9 @@ const AdminUserDetail = () => {
                     <span className="badge badge-error badge-xs">Deleted</span>
                   )}
                 </div>
-                <p className="text-sm text-base-content/60 line-clamp-3">
+                <p className="text-sm text-base-content/60 line-clamp-3 whitespace-pre-wrap">
                   {note.content || "No content"}
                 </p>
-                {note.tags?.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {note.tags.map((tag) => (
-                      <span key={tag} className="badge badge-outline badge-xs">
-                        <HiTag className="text-xs mr-1" />
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                )}
                 <div className="text-xs text-base-content/40 mt-2">
                   {formatDateTime(note.createdAt)}
                 </div>

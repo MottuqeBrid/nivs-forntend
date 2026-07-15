@@ -121,11 +121,9 @@ const Profile = () => {
     <div className="py-8 max-w-2xl mx-auto">
       {/* ── Header ── */}
       <div className="flex items-center gap-4 mb-8">
-        <div className="avatar placeholder">
-          <div className="bg-primary text-primary-content rounded-full w-20">
-            <span className="text-3xl font-bold">
-              {user.name?.charAt(0).toUpperCase() || "U"}
-            </span>
+        <div className="avatar">
+          <div className="rounded-full w-20">
+            <img src="/profile.png" alt="Profile" />
           </div>
         </div>
         <div>
