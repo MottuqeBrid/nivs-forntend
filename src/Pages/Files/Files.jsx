@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Link } from "react-router";
+import { Navigate } from "react-router";
 import { toast } from "react-toastify";
 import {
   HiPlus,
@@ -390,20 +390,7 @@ const Files = () => {
   }
 
   // ── Not logged in ──
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
-        <HiDocument className="text-6xl text-base-content/30" />
-        <h2 className="text-2xl font-bold">Login to manage your files</h2>
-        <p className="text-base-content/60 max-w-md">
-          You need to be logged in to upload, organize, and manage your files.
-        </p>
-        <Link to="/login" className="btn btn-primary rounded-lg">
-          Login
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return <Navigate to="/login" replace />;
 
   return (
     <div className="py-8">

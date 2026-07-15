@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router";
+import { Navigate } from "react-router";
 import { toast } from "react-toastify";
 import {
   HiDocumentText,
@@ -134,20 +134,7 @@ const Notes = () => {
     });
   };
 
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4">
-        <HiDocumentText className="text-6xl text-base-content/30" />
-        <h2 className="text-2xl font-bold">Login to manage your notes</h2>
-        <p className="text-base-content/60 max-w-md">
-          You need to be logged in to create, edit, and manage your notes.
-        </p>
-        <Link to="/login" className="btn btn-primary rounded-lg">
-          Login
-        </Link>
-      </div>
-    );
-  }
+  if (!user) return <Navigate to="/login" replace />;
 
   if (loading) {
     return (
