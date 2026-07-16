@@ -82,13 +82,17 @@ const Images = () => {
   );
 
   const filtered = images.filter((img) => {
-    const matchTag = !filterTag || (img.tags || []).includes(filterTag);
+    const tags = img.tags || [];
+    const matchTag =
+      !filterTag ||
+      (filterTag === "__untagged__" && tags.length === 0) ||
+      tags.includes(filterTag);
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
       img.name?.toLowerCase().includes(q) ||
       img.alt?.toLowerCase().includes(q) ||
-      (img.tags || []).some((t) => t.toLowerCase().includes(q));
+      tags.some((t) => t.toLowerCase().includes(q));
     return matchTag && matchSearch;
   });
 
@@ -355,6 +359,20 @@ const Images = () => {
                 onClick={() => handleFilterTag("")}
               >
                 All
+              </button>
+              <button
+                className={`badge badge-lg cursor-pointer transition-all ${
+                  filterTag === "__untagged__"
+                    ? "badge-primary"
+                    : "badge-ghost hover:badge-outline"
+                }`}
+                onClick={() =>
+                  handleFilterTag(
+                    filterTag === "__untagged__" ? "" : "__untagged__"
+                  )
+                }
+              >
+                No Tags
               </button>
               {allTags.map((tag) => (
                 <button

@@ -223,12 +223,16 @@ const Files = () => {
   );
 
   const filtered = files.filter((f) => {
-    const matchTag = !filterTag || (f.tags || []).includes(filterTag);
+    const tags = f.tags || [];
+    const matchTag =
+      !filterTag ||
+      (filterTag === "__untagged__" && tags.length === 0) ||
+      tags.includes(filterTag);
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
       f.name?.toLowerCase().includes(q) ||
-      (f.tags || []).some((t) => t.toLowerCase().includes(q));
+      tags.some((t) => t.toLowerCase().includes(q));
     return matchTag && matchSearch;
   });
 
@@ -483,6 +487,20 @@ const Files = () => {
                 onClick={() => handleFilterTag("")}
               >
                 All
+              </button>
+              <button
+                className={`badge badge-lg cursor-pointer transition-all ${
+                  filterTag === "__untagged__"
+                    ? "badge-primary"
+                    : "badge-ghost hover:badge-outline"
+                }`}
+                onClick={() =>
+                  handleFilterTag(
+                    filterTag === "__untagged__" ? "" : "__untagged__"
+                  )
+                }
+              >
+                No Tags
               </button>
               {allTags.map((tag) => (
                 <button

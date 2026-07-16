@@ -98,12 +98,17 @@ const Videos = () => {
   );
 
   const filtered = videos.filter((v) => {
-    const matchTag = !filterTag || (v.tags || []).includes(filterTag);
+    const tags = v.tags || [];
+    const matchTag =
+      !filterTag ||
+      (filterTag === "__untagged__" && tags.length === 0) ||
+      tags.includes(filterTag);
     const q = search.toLowerCase();
     const matchSearch =
       !q ||
       v.name?.toLowerCase().includes(q) ||
-      (v.tags || []).some((t) => t.toLowerCase().includes(q));
+      v.title?.toLowerCase().includes(q) ||
+      tags.some((t) => t.toLowerCase().includes(q));
     return matchTag && matchSearch;
   });
 
@@ -357,6 +362,20 @@ const Videos = () => {
                 onClick={() => handleFilterTag("")}
               >
                 All
+              </button>
+              <button
+                className={`badge badge-lg cursor-pointer transition-all ${
+                  filterTag === "__untagged__"
+                    ? "badge-primary"
+                    : "badge-ghost hover:badge-outline"
+                }`}
+                onClick={() =>
+                  handleFilterTag(
+                    filterTag === "__untagged__" ? "" : "__untagged__"
+                  )
+                }
+              >
+                No Tags
               </button>
               {allTags.map((tag) => (
                 <button
