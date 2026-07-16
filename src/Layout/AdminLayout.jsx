@@ -1,6 +1,7 @@
 import { Outlet, Navigate, NavLink } from "react-router";
 import Navbar from "../component/Navbar/Navbar";
 import ScrollToTop from "../component/ScrollToTop/ScrollToTop";
+import Footer from "../component/Footer/Footer";
 import { useAuth } from "../hooks/useAuth";
 import {
   HiUsers,
@@ -98,6 +99,7 @@ const AdminLayout = () => {
           <Outlet />
         </main>
       </div>
+      <Footer />
       <ScrollToTop />
     </div>
   );

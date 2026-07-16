@@ -100,20 +100,39 @@ const AdminDashboard = () => {
     .sort((a, b) => b.count - a.count)
     .slice(0, 5);
 
-  // Content per user
-  const userContent = data.users.map((u) => ({
-    name: u.name,
-    email: u.email,
-    images: u.images?.length || 0,
-    videos: u.videos?.length || 0,
-    files: u.files?.length || 0,
-    notes: u.notes?.length || 0,
-    total:
-      (u.images?.length || 0) +
-      (u.videos?.length || 0) +
-      (u.files?.length || 0) +
-      (u.notes?.length || 0),
-  }));
+  // Content per user (count from actual data, not embedded arrays)
+  const contentCount = {};
+  const ensureUser = (id, name, email) => {
+    if (!contentCount[id])
+      contentCount[id] = { name: name || "Unknown", email: email || "", images: 0, videos: 0, files: 0, notes: 0 };
+  };
+  data.images.forEach((img) => {
+    const uid = img.user?._id || img.user;
+    const u = data.users.find((x) => x._id === uid);
+    ensureUser(uid, u?.name, u?.email);
+    contentCount[uid].images++;
+  });
+  data.videos.forEach((vid) => {
+    const uid = vid.user?._id || vid.user;
+    const u = data.users.find((x) => x._id === uid);
+    ensureUser(uid, u?.name, u?.email);
+    contentCount[uid].videos++;
+  });
+  data.files.forEach((f) => {
+    const uid = f.user?._id || f.user;
+    const u = data.users.find((x) => x._id === uid);
+    ensureUser(uid, u?.name, u?.email);
+    contentCount[uid].files++;
+  });
+  data.notes.forEach((n) => {
+    const uid = n.user?._id || n.user;
+    const u = data.users.find((x) => x._id === uid);
+    ensureUser(uid, u?.name, u?.email);
+    contentCount[uid].notes++;
+  });
+  const userContent = Object.values(contentCount)
+    .map((u) => ({ ...u, total: u.images + u.videos + u.files + u.notes }))
+    .filter((u) => u.total > 0);
   const topContentUsers = [...userContent]
     .sort((a, b) => b.total - a.total)
     .slice(0, 5);
