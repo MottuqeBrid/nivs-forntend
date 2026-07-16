@@ -99,8 +99,8 @@ const Profile = () => {
     }
   };
 
-  if (!user && !authLoading) {
-    navigate("/login");
+  if (!user) {
+    if (!authLoading) navigate("/login");
     return null;
   }
 
@@ -136,34 +136,33 @@ const Profile = () => {
       </div>
 
       {/* ── Stats ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <div className="stat bg-base-200 rounded-xl p-4 shadow">
-          <div className="stat-title text-xs">Role</div>
-          <div className="mt-1">
+      <div className="card bg-base-200 shadow mb-8">
+        <div className="card-body">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="card-title text-lg">Stats</h2>
             <span
               className={`badge ${roleColors[user.role] || "badge-ghost"} badge-sm`}
             >
               {user.role}
             </span>
           </div>
-        </div>
-        <div className="stat bg-base-200 rounded-xl p-4 shadow">
-          <div className="stat-title text-xs flex items-center gap-1">
-            <HiPhotograph className="text-xs" /> Images
+          <div className="grid grid-cols-3 gap-3">
+            <div className="text-center p-4 bg-success/10 rounded-xl">
+              <HiPhotograph className="text-3xl text-success mx-auto mb-2" />
+              <p className="text-3xl font-bold">{user.images?.length || 0}</p>
+              <p className="text-sm text-base-content/60">Images</p>
+            </div>
+            <div className="text-center p-4 bg-error/10 rounded-xl">
+              <HiVideoCamera className="text-3xl text-error mx-auto mb-2" />
+              <p className="text-3xl font-bold">{user.videos?.length || 0}</p>
+              <p className="text-sm text-base-content/60">Videos</p>
+            </div>
+            <div className="text-center p-4 bg-warning/10 rounded-xl">
+              <HiDocument className="text-3xl text-warning mx-auto mb-2" />
+              <p className="text-3xl font-bold">{user.files?.length || 0}</p>
+              <p className="text-sm text-base-content/60">Files</p>
+            </div>
           </div>
-          <div className="stat-value text-lg">{user.images?.length || 0}</div>
-        </div>
-        <div className="stat bg-base-200 rounded-xl p-4 shadow">
-          <div className="stat-title text-xs flex items-center gap-1">
-            <HiVideoCamera className="text-xs" /> Videos
-          </div>
-          <div className="stat-value text-lg">{user.videos?.length || 0}</div>
-        </div>
-        <div className="stat bg-base-200 rounded-xl p-4 shadow">
-          <div className="stat-title text-xs flex items-center gap-1">
-            <HiDocument className="text-xs" /> Files
-          </div>
-          <div className="stat-value text-lg">{user.files?.length || 0}</div>
         </div>
       </div>
 
