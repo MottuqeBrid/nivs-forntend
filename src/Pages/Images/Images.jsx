@@ -170,6 +170,10 @@ const Images = () => {
     reader.onloadend = () => setFilePreview(reader.result);
     reader.readAsDataURL(f);
     setInputMode("file");
+    if (!form.name) {
+      const name = f.name.replace(/\.[^.]+$/, "");
+      setForm((prev) => ({ ...prev, name }));
+    }
   };
 
   const onFileInput = (e) => handleFile(e.target.files?.[0]);
