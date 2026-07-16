@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Navigate } from "react-router";
 import { toast } from "react-toastify";
+import { TagsInput } from "@mantine/core";
 import {
   HiPlus,
   HiPhotograph,
@@ -18,7 +19,7 @@ import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 import { uploadToStorage } from "../../lib/upload";
 
-const EMPTY_FORM = { name: "", alt: "", tags: "" };
+const EMPTY_FORM = { name: "", alt: "", tags: [] };
 const ALLOWED = [
   "image/jpeg",
   "image/png",
@@ -71,7 +72,10 @@ const Images = () => {
   }, [fetchImages]);
 
   // ── Derived data ──
-  const allTags = [...new Set(images.flatMap((img) => img.tags || []))];
+  const allTags = useMemo(
+    () => [...new Set(images.flatMap((img) => img.tags || []))],
+    [images],
+  );
 
   const filtered = images.filter((img) => {
     const matchTag = !filterTag || (img.tags || []).includes(filterTag);
@@ -104,7 +108,7 @@ const Images = () => {
     setForm({
       name: img.name || "",
       alt: img.alt || "",
-      tags: (img.tags || []).join(", "),
+      tags: img.tags || [],
     });
     setUrlInput(img.url || "");
     setFile(null);
@@ -186,10 +190,7 @@ const Images = () => {
         url: imageUrl,
         name: form.name.trim(),
         alt: form.alt.trim(),
-        tags: form.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
+        tags: form.tags,
       };
 
       if (editId) {
@@ -610,22 +611,16 @@ const Images = () => {
             </div>
 
             {/* ── Tags ── */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Tags</span>
-                <span className="label-text-alt text-base-content/50">
-                  comma separated
-                </span>
-              </label>
-              <input
-                type="text"
-                name="tags"
-                placeholder="nature, landscape, sunset"
-                className="input input-bordered w-full"
-                value={form.tags}
-                onChange={handleChange}
-              />
-            </div>
+            <TagsInput
+              label="Tags"
+              placeholder="Type and press Enter"
+              data={allTags}
+              value={form.tags}
+              onChange={(val) => setForm((f) => ({ ...f, tags: val }))}
+              splitChars={[","]}
+              clearable
+              comboboxProps={{ withinPortal: false }}
+            />
 
             <div className="modal-action">
               <button

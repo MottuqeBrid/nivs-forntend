@@ -114,12 +114,12 @@ const Navbar = () => {
 
   return (
     <>
-      <div className="sticky top-0 z-50 bg-base-100/70 backdrop-blur-xl border-b border-base-300/40 shadow-sm supports-[backdrop-filter]:bg-base-100/60">
+      <div className="sticky top-0 z-50 bg-base-100/70 backdrop-blur-xl border-b border-base-300/40 shadow-sm supports-backdrop-filter:bg-base-100/60">
         <div className="navbar max-w-7xl mx-auto px-3 sm:px-4">
           {/* ── Left ── */}
           <div className="navbar-start gap-1">
             <button
-              className="btn btn-ghost btn-square sm:btn-circle text-xl min-w-[2.75rem] lg:hidden hover:bg-base-300/70 transition-colors"
+              className="btn btn-ghost btn-square sm:btn-circle text-xl min-w-11 lg:hidden hover:bg-base-300/70 transition-colors"
               onClick={() => setMobileOpen((o) => !o)}
               aria-label="Toggle menu"
             >
@@ -128,14 +128,14 @@ const Navbar = () => {
 
             <NavLink
               to="/"
-              className="btn btn-ghost gap-2 px-2 min-h-[2.75rem] hover:bg-transparent group"
+              className="btn btn-ghost gap-2 px-2 min-h-11 hover:bg-transparent group"
             >
               <img
                 src={logo}
                 alt="NIVS"
                 className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg ring-1 ring-base-300/60 group-hover:ring-primary/50 transition-all"
               />
-              <span className="text-base sm:text-lg font-bold hidden sm:inline tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-base sm:text-lg font-bold hidden sm:inline tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                 NIVS
               </span>
             </NavLink>
@@ -169,7 +169,7 @@ const Navbar = () => {
           <div className="navbar-end gap-1">
             {/* Theme toggle */}
             <button
-              className="btn btn-ghost btn-square sm:btn-circle min-w-[2.75rem] min-h-[2.75rem] relative overflow-hidden hover:bg-base-300/70 transition-colors"
+              className="btn btn-ghost btn-square sm:btn-circle min-w-11 min-h-11 relative overflow-hidden hover:bg-base-300/70 transition-colors"
               onClick={toggleTheme}
               aria-label="Toggle theme"
             >
@@ -193,7 +193,7 @@ const Navbar = () => {
             {!loading && user && (
               <div className="dropdown dropdown-end" ref={userMenuRef}>
                 <button
-                  className="btn btn-ghost btn-circle avatar placeholder min-w-[2.75rem] min-h-[2.75rem] ring-1 ring-base-300/60 hover:ring-primary/50 transition-all"
+                  className="btn btn-ghost btn-circle avatar placeholder min-w-11 min-h-11 ring-1 ring-base-300/60 hover:ring-primary/50 transition-all"
                   onClick={() => setUserMenuOpen((o) => !o)}
                 >
                   <div className="rounded-full w-8 h-8 bg-primary/15 text-primary flex items-center justify-center text-xs font-bold">
@@ -292,12 +292,12 @@ const Navbar = () => {
               onClick={closeMobile}
             >
               <img src={logo} alt="NIVS" className="h-9 w-9 rounded-lg" />
-              <span className="text-lg font-bold tracking-tight bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="text-lg font-bold tracking-tight bg-linear-to-r from-primary to-secondary bg-clip-text text-transparent">
                 NIVS
               </span>
             </NavLink>
             <button
-              className="btn btn-ghost btn-square btn-sm min-w-[2.25rem] min-h-[2.25rem]"
+              className="btn btn-ghost btn-square btn-sm min-w-9 min-h-9"
               onClick={closeMobile}
               aria-label="Close menu"
             >

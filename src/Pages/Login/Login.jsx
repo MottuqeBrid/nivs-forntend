@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { toast } from "react-toastify";
-import { HiMail, HiLockClosed } from "react-icons/hi";
+import { HiMail, HiLockClosed, HiEye, HiEyeOff } from "react-icons/hi";
 import { useAuth } from "../../hooks/useAuth";
 import axiosInstance from "../../lib/axiosInstance";
 
@@ -10,6 +10,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -73,13 +74,25 @@ const Login = () => {
               <div className="input input-bordered flex items-center gap-2 focus-within:ring-2 focus-within:ring-primary w-full">
                 <HiLockClosed className="text-lg opacity-60 shrink-0" />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   className="bg-transparent outline-none w-full"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                 />
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-xs shrink-0"
+                  onClick={() => setShowPassword((s) => !s)}
+                  tabIndex={-1}
+                >
+                  {showPassword ? (
+                    <HiEyeOff className="text-lg opacity-60" />
+                  ) : (
+                    <HiEye className="text-lg opacity-60" />
+                  )}
+                </button>
               </div>
             </div>
 

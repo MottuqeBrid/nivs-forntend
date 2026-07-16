@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Navigate } from "react-router";
 import { toast } from "react-toastify";
+import { TagsInput } from "@mantine/core";
 import {
   HiPlus,
   HiDocument,
@@ -25,7 +26,7 @@ import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 import { uploadToStorage } from "../../lib/upload";
 
-const EMPTY_FORM = { name: "", tags: "" };
+const EMPTY_FORM = { name: "", tags: [] };
 const ALLOWED = [
   "application/pdf",
   "text/plain",
@@ -212,7 +213,10 @@ const Files = () => {
   }, [fetchFiles]);
 
   // ── Derived data ──
-  const allTags = [...new Set(files.flatMap((f) => f.tags || []))];
+  const allTags = useMemo(
+    () => [...new Set(files.flatMap((f) => f.tags || []))],
+    [files],
+  );
 
   const filtered = files.filter((f) => {
     const matchTag = !filterTag || (f.tags || []).includes(filterTag);
@@ -241,7 +245,7 @@ const Files = () => {
 
   const openEdit = (f) => {
     setEditId(f._id);
-    setForm({ name: f.name || "", tags: (f.tags || []).join(", ") });
+    setForm({ name: f.name || "", tags: f.tags || [] });
     setUrlInput(f.url || "");
     setFile(null);
     setFileName("");
@@ -319,10 +323,7 @@ const Files = () => {
       const payload = {
         url: fileUrl,
         name: form.name.trim() || file?.name || fileName || "Untitled",
-        tags: form.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean),
+        tags: form.tags,
       };
 
       if (editId) {
@@ -723,22 +724,16 @@ const Files = () => {
             </div>
 
             {/* ── Tags ── */}
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text font-medium">Tags</span>
-                <span className="label-text-alt text-base-content/50">
-                  comma separated
-                </span>
-              </label>
-              <input
-                type="text"
-                name="tags"
-                placeholder="work, project, docs"
-                className="input input-bordered w-full"
-                value={form.tags}
-                onChange={handleChange}
-              />
-            </div>
+            <TagsInput
+              label="Tags"
+              placeholder="Type and press Enter"
+              data={allTags}
+              value={form.tags}
+              onChange={(val) => setForm((f) => ({ ...f, tags: val }))}
+              splitChars={[","]}
+              clearable
+              comboboxProps={{ withinPortal: false }}
+            />
 
             <div className="modal-action">
               <button

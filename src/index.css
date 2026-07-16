@@ -70,3 +70,59 @@
   --depth: 1;
   --noise: 0;
 }
+
+/* ============================
+   Mantine Theme Override
+============================ */
+
+html,
+body,
+#root,
+#__next {
+  background: var(--color-base-100) !important;
+  color: var(--color-base-content) !important;
+}
+
+/* Mantine Provider */
+.mantine-Provider-root {
+  background: transparent !important;
+  color: inherit !important;
+}
+
+/* Override Mantine CSS variables */
+:root {
+  --mantine-color-body: var(--color-base-100);
+  --mantine-color-text: var(--color-base-content);
+}
+
+/* Dark/Light support */
+[data-theme="dark"] {
+  --mantine-color-body: var(--color-base-100);
+  --mantine-color-text: var(--color-base-content);
+}
+
+[data-theme="light"] {
+  --mantine-color-body: var(--color-base-100);
+  --mantine-color-text: var(--color-base-content);
+}
+
+/* Dropdown */
+.mantine-Combobox-dropdown {
+  background: var(--color-base-200) !important;
+  color: var(--color-base-content) !important;
+  border: 1px solid var(--color-base-300) !important;
+}
+
+/* Option */
+.mantine-Combobox-option {
+  color: var(--color-base-content) !important;
+}
+
+.mantine-Combobox-option:hover {
+  background: var(--color-base-300) !important;
+}
+
+.mantine-Combobox-option[data-combobox-selected="true"] {
+  background: var(--color-primary) !important;
+  color: var(--color-primary-content) !important;
+}
