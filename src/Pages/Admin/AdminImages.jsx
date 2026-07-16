@@ -9,6 +9,7 @@ import {
   HiUser,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
+import Pagination from "../../component/Pagination/Pagination";
 
 const AdminImages = () => {
   const app = useAxios();
@@ -16,6 +17,9 @@ const AdminImages = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterTag, setFilterTag] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
   const [previewImg, setPreviewImg] = useState(null);
 
   const fetchImages = useCallback(async () => {
@@ -47,6 +51,18 @@ const AdminImages = () => {
       (img.tags || []).some((t) => t.toLowerCase().includes(q));
     return matchTag && matchSearch;
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name-asc") return (a.name || "").localeCompare(b.name || "");
+    if (sort === "name-desc") return (b.name || "").localeCompare(a.name || "");
+    if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+  const handleSearch = (val) => { setSearch(val); setPage(1); };
+  const handleFilterTag = (val) => { setFilterTag(val); setPage(1); };
+  const handlePerPage = (val) => { setPerPage(val); setPage(1); };
 
   if (loading) {
     return (
@@ -88,20 +104,29 @@ const AdminImages = () => {
             placeholder="Search images..."
             className="bg-transparent outline-none w-full"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
           {search && (
             <button
-              onClick={() => setSearch("")}
+              onClick={() => handleSearch("")}
               className="btn btn-ghost btn-xs"
             >
               <HiX />
             </button>
           )}
         </div>
-      </div>
 
-      {/* Tags */}
+        <select
+          className="select select-bordered select-sm"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+        </select>
+      </div>
       {allTags.length > 0 && (
         <div className="flex items-center gap-2 flex-wrap mb-6">
           <HiTag className="text-lg opacity-60 shrink-0" />
@@ -109,7 +134,7 @@ const AdminImages = () => {
             className={`badge badge-lg cursor-pointer transition-all ${
               !filterTag ? "badge-primary" : "badge-ghost hover:badge-outline"
             }`}
-            onClick={() => setFilterTag("")}
+            onClick={() => handleFilterTag("")}
           >
             All
           </button>
@@ -121,7 +146,7 @@ const AdminImages = () => {
                   ? "badge-primary"
                   : "badge-ghost hover:badge-outline"
               }`}
-              onClick={() => setFilterTag(filterTag === tag ? "" : tag)}
+              onClick={() => handleFilterTag(filterTag === tag ? "" : tag)}
             >
               {tag}
             </button>
@@ -151,7 +176,7 @@ const AdminImages = () => {
       {/* Grid */}
       {filtered.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((img) => (
+          {paginated.map((img) => (
             <div
               key={img._id}
               className={`card shadow-md hover:shadow-xl transition-all duration-300 group ${img.isDeleted ? "bg-base-200/50 opacity-60" : "bg-base-200"}`}
@@ -206,6 +231,17 @@ const AdminImages = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {filtered.length > 0 && (
+        <Pagination
+          page={page}
+          perPage={perPage}
+          total={filtered.length}
+          onPageChange={setPage}
+          onPerPageChange={handlePerPage}
+        />
       )}
 
       {/* Lightbox */}

@@ -16,6 +16,7 @@ import {
 } from "react-icons/hi";
 import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
+import Avatar from "../../component/Avatar/Avatar";
 
 const Profile = () => {
   const { user, setUser, logout, loading: authLoading } = useAuth();
@@ -121,11 +122,7 @@ const Profile = () => {
     <div className="py-8 max-w-2xl mx-auto">
       {/* ── Header ── */}
       <div className="flex items-center gap-4 mb-8">
-        <div className="avatar">
-          <div className="rounded-full w-20">
-            <img src="/profile.png" alt="Profile" />
-          </div>
-        </div>
+        <Avatar name={user.name} size="xl" />
         <div>
           <h1 className="text-3xl font-bold">{user.name}</h1>
           <p className="text-base-content/60">{user.email}</p>

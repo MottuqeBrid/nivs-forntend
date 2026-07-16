@@ -1,4 +1,5 @@
 import { HiStar } from "react-icons/hi";
+import Avatar from "../Avatar/Avatar";
 
 const testimonials = [
   {
@@ -49,11 +50,7 @@ const Testimonials = () => {
               </div>
               <p className="text-sm text-base-content/70 mb-4">"{content}"</p>
               <div className="flex items-center gap-3">
-                <div className="avatar">
-                  <div className="rounded-full w-10">
-                    <img src="/profile.png" alt="Profile" />
-                  </div>
-                </div>
+                <Avatar name={name} size="md" />
                 <div>
                   <p className="font-medium text-sm">{name}</p>
                   <p className="text-xs text-base-content/50">{role}</p>

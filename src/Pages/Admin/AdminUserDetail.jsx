@@ -21,6 +21,7 @@ import {
   HiExclamationCircle,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
+import Avatar from "../../component/Avatar/Avatar";
 
 const TABS = [
   { key: "images", label: "Images", icon: HiPhotograph },
@@ -214,13 +215,7 @@ const AdminUserDetail = () => {
         <div className="card-body">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
             {/* Avatar */}
-            <div className="avatar">
-              <div
-                className={`rounded-full w-24 ${user.isDeleted ? "bg-base-300" : ""}`}
-              >
-                <img src="/profile.png" alt="Profile" />
-              </div>
-            </div>
+            <Avatar name={user.name} size="2xl" />
 
             {/* Info */}
             <div className="flex-1 min-w-0">

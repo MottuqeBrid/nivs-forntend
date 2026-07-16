@@ -16,6 +16,7 @@ import {
   HiCheckCircle,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
+import Avatar from "../../component/Avatar/Avatar";
 
 const AdminDashboard = () => {
   const app = useAxios();
@@ -333,11 +334,7 @@ const AdminDashboard = () => {
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       {u.user && (
-                        <div className="avatar shrink-0">
-                          <div className="rounded-full w-8">
-                            <img src="/profile.png" alt="Profile" />
-                          </div>
-                        </div>
+                        <Avatar name={u.user?.name} size="sm" />
                       )}
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">
@@ -389,11 +386,7 @@ const AdminDashboard = () => {
                     className="flex items-center justify-between p-2 rounded-lg hover:bg-base-300 transition-colors"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="avatar shrink-0">
-                        <div className="rounded-full w-8">
-                          <img src="/profile.png" alt="Profile" />
-                        </div>
-                      </div>
+                      <Avatar name={u.name} size="sm" />
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{u.name}</p>
                         <p className="text-xs text-base-content/50 truncate">
@@ -459,11 +452,7 @@ const AdminDashboard = () => {
                       <tr key={i}>
                         <td>
                           <div className="flex items-center gap-2">
-                            <div className="avatar">
-                              <div className="rounded-full w-7">
-                                <img src="/profile.png" alt="Profile" />
-                              </div>
-                            </div>
+                            <Avatar name={u.name} size="xs" />
                             <span className="text-sm truncate max-w-30">
                               {u.name}
                             </span>

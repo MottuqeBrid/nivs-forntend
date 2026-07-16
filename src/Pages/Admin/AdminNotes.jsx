@@ -8,12 +8,16 @@ import {
   HiCalendar,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
+import Pagination from "../../component/Pagination/Pagination";
 
 const AdminNotes = () => {
   const app = useAxios();
   const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
   const [viewNote, setViewNote] = useState(null);
 
   const fetchNotes = useCallback(async () => {
@@ -41,6 +45,17 @@ const AdminNotes = () => {
       n.user?.email?.toLowerCase().includes(q)
     );
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name-asc") return (a.title || "").localeCompare(b.title || "");
+    if (sort === "name-desc") return (b.title || "").localeCompare(a.title || "");
+    if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+  const handleSearch = (val) => { setSearch(val); setPage(1); };
+  const handlePerPage = (val) => { setPerPage(val); setPage(1); };
 
   const formatDateTime = (date) => {
     if (!date) return "N/A";
@@ -93,17 +108,28 @@ const AdminNotes = () => {
             placeholder="Search notes..."
             className="bg-transparent outline-none w-full"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
           {search && (
             <button
-              onClick={() => setSearch("")}
+              onClick={() => handleSearch("")}
               className="btn btn-ghost btn-xs"
             >
               <HiX />
             </button>
           )}
         </div>
+
+        <select
+          className="select select-bordered select-sm"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name-asc">Title A–Z</option>
+          <option value="name-desc">Title Z–A</option>
+        </select>
       </div>
 
       {/* Empty */}
@@ -128,7 +154,7 @@ const AdminNotes = () => {
       {/* Grid */}
       {filtered.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((note) => (
+          {paginated.map((note) => (
             <div
               key={note._id}
               className={`card shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${note.isDeleted ? "bg-base-200/50 opacity-60" : "bg-base-200"}`}
@@ -160,6 +186,17 @@ const AdminNotes = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {/* Pagination */}
+      {filtered.length > 0 && (
+        <Pagination
+          page={page}
+          perPage={perPage}
+          total={filtered.length}
+          onPageChange={setPage}
+          onPerPageChange={handlePerPage}
+        />
       )}
 
       {/* View Note Modal */}

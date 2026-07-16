@@ -14,6 +14,7 @@ import {
   HiVideoCamera,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
+import Pagination from "../../component/Pagination/Pagination";
 
 const getFileIcon = (name) => {
   const ext = name?.split(".").pop()?.toLowerCase() || "";
@@ -44,6 +45,9 @@ const AdminFiles = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
   const [preview, setPreview] = useState(null);
 
   const fetchFiles = useCallback(async () => {
@@ -72,6 +76,17 @@ const AdminFiles = () => {
       (f.tags || []).some((t) => t.toLowerCase().includes(q))
     );
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name-asc") return (a.name || "").localeCompare(b.name || "");
+    if (sort === "name-desc") return (b.name || "").localeCompare(a.name || "");
+    if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+  const handleSearch = (val) => { setSearch(val); setPage(1); };
+  const handlePerPage = (val) => { setPerPage(val); setPage(1); };
 
   if (loading) {
     return (
@@ -112,17 +127,28 @@ const AdminFiles = () => {
             placeholder="Search files..."
             className="bg-transparent outline-none w-full"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
           {search && (
             <button
-              onClick={() => setSearch("")}
+              onClick={() => handleSearch("")}
               className="btn btn-ghost btn-xs"
             >
               <HiX />
             </button>
           )}
         </div>
+
+        <select
+          className="select select-bordered select-sm"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+        </select>
       </div>
 
       {/* Empty */}
@@ -147,7 +173,7 @@ const AdminFiles = () => {
       {/* Grid */}
       {filtered.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filtered.map((file) => {
+          {paginated.map((file) => {
             const FileIcon = getFileIcon(file.name);
             const iconColor = getFileColor(file.name);
             const ext = file.name?.split(".").pop()?.toLowerCase() || "";
@@ -228,6 +254,17 @@ const AdminFiles = () => {
             );
           })}
         </div>
+      )}
+
+      {/* Pagination */}
+      {filtered.length > 0 && (
+        <Pagination
+          page={page}
+          perPage={perPage}
+          total={filtered.length}
+          onPageChange={setPage}
+          onPerPageChange={handlePerPage}
+        />
       )}
 
       {/* Preview Modal */}

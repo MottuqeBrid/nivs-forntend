@@ -14,12 +14,17 @@ import {
   HiX,
 } from "react-icons/hi";
 import useAxios from "../../hooks/useAxios";
+import Avatar from "../../component/Avatar/Avatar";
+import Pagination from "../../component/Pagination/Pagination";
 
 const AdminUsers = () => {
   const app = useAxios();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [editTarget, setEditTarget] = useState(null);
@@ -88,6 +93,17 @@ const AdminUsers = () => {
       u.role?.toLowerCase().includes(q)
     );
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name-asc") return (a.name || "").localeCompare(b.name || "");
+    if (sort === "name-desc") return (b.name || "").localeCompare(a.name || "");
+    if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+  const handleSearch = (val) => { setSearch(val); setPage(1); };
+  const handlePerPage = (val) => { setPerPage(val); setPage(1); };
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
@@ -209,17 +225,28 @@ const AdminUsers = () => {
             placeholder="Search users..."
             className="bg-transparent outline-none w-full"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
           />
           {search && (
             <button
-              onClick={() => setSearch("")}
+              onClick={() => handleSearch("")}
               className="btn btn-ghost btn-xs"
             >
               <HiX />
             </button>
           )}
         </div>
+
+        <select
+          className="select select-bordered select-sm"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+        </select>
       </div>
 
       {/* Empty */}
@@ -255,15 +282,11 @@ const AdminUsers = () => {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((u) => (
+              {paginated.map((u) => (
                 <tr key={u._id} className="hover">
                   <td>
                     <div className="flex items-center gap-3">
-                      <div className="avatar">
-                        <div className="rounded-full w-10">
-                          <img src="/profile.png" alt="Profile" />
-                        </div>
-                      </div>
+                      <Avatar name={u.name} size="md" />
                       <div>
                         <p className="font-medium">{u.name}</p>
                         <p className="text-xs text-base-content/50">
@@ -325,6 +348,17 @@ const AdminUsers = () => {
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Pagination */}
+      {filtered.length > 0 && (
+        <Pagination
+          page={page}
+          perPage={perPage}
+          total={filtered.length}
+          onPageChange={setPage}
+          onPerPageChange={handlePerPage}
+        />
       )}
 
       {/* Edit Role Modal */}
