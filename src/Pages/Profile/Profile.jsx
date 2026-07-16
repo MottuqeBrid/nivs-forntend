@@ -18,7 +18,7 @@ import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 
 const Profile = () => {
-  const { user, setUser, logout } = useAuth();
+  const { user, setUser, logout, loading: authLoading } = useAuth();
   const app = useAxios();
   const navigate = useNavigate();
 
@@ -98,7 +98,7 @@ const Profile = () => {
     }
   };
 
-  if (!user) {
+  if (!user && !authLoading) {
     navigate("/login");
     return null;
   }
@@ -255,7 +255,10 @@ const Profile = () => {
           </button>
 
           {showPassword && (
-            <form onSubmit={changePassword} className="flex flex-col gap-3 mt-4">
+            <form
+              onSubmit={changePassword}
+              className="flex flex-col gap-3 mt-4"
+            >
               <div className="form-control">
                 <label className="label">
                   <span className="label-text font-medium">
@@ -330,8 +333,8 @@ const Profile = () => {
             <HiOutlineExclamationCircle className="text-5xl text-error" />
             <h3 className="font-bold text-lg">Delete Account?</h3>
             <p className="text-base-content/60">
-              This will permanently delete your account, all your images, videos,
-              files, and notes. This cannot be undone.
+              This will permanently delete your account, all your images,
+              videos, files, and notes. This cannot be undone.
             </p>
           </div>
           <div className="modal-action justify-center gap-3">

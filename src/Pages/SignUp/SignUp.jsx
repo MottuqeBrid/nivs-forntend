@@ -11,13 +11,12 @@ const SignUp = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log("Submitting:", { name, email, password });
 
     try {
       const { data } = await axiosInstance.post("users/signup", {
@@ -37,6 +36,10 @@ const SignUp = () => {
       setLoading(false);
     }
   };
+
+  if (user && !authLoading) {
+    navigate("/");
+  }
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-80px)] px-4">

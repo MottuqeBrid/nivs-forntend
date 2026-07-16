@@ -11,20 +11,18 @@ const Login = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log("Submitting:", { email, password, rememberMe });
 
     try {
       const { data } = await axiosInstance.post("users/login", {
         email,
         password,
       });
-      console.log(data);
 
       if (data.success) {
         await login(data.token, rememberMe);
@@ -38,6 +36,10 @@ const Login = () => {
       setLoading(false);
     }
   };
+
+  if (user && !authLoading) {
+    navigate("/");
+  }
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-80px)] px-4">

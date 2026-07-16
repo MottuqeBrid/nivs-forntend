@@ -18,6 +18,7 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 import { uploadToStorage } from "../../lib/upload";
+import Pagination from "../../component/Pagination/Pagination";
 
 const EMPTY_FORM = { name: "", tags: [] };
 const ALLOWED = [
@@ -45,7 +46,7 @@ const isDirectVideo = (url) => {
 };
 
 const Videos = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const app = useAxios();
 
   const [videos, setVideos] = useState([]);
@@ -57,8 +58,11 @@ const Videos = () => {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [filterTag, setFilterTag] = useState("");
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
   const [submitting, setSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
 
   // Upload state
   const [inputMode, setInputMode] = useState("file");
@@ -102,6 +106,28 @@ const Videos = () => {
       (v.tags || []).some((t) => t.toLowerCase().includes(q));
     return matchTag && matchSearch;
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name-asc") return (a.name || "").localeCompare(b.name || "");
+    if (sort === "name-desc") return (b.name || "").localeCompare(a.name || "");
+    if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+
+  const handleSearch = (val) => {
+    setSearch(val);
+    setPage(1);
+  };
+  const handleFilterTag = (val) => {
+    setFilterTag(val);
+    setPage(1);
+  };
+  const handlePerPage = (val) => {
+    setPerPage(val);
+    setPage(1);
+  };
 
   // ── Modal helpers ──
   const resetForm = () => {
@@ -265,7 +291,7 @@ const Videos = () => {
   }
 
   // ── Not logged in ──
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user && !authLoading) return <Navigate to="/login" replace />;
 
   return (
     <div className="py-8">
@@ -296,17 +322,28 @@ const Videos = () => {
               placeholder="Search videos..."
               className="bg-transparent outline-none w-full"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => handleSearch(e.target.value)}
             />
             {search && (
               <button
-                onClick={() => setSearch("")}
+                onClick={() => handleSearch("")}
                 className="btn btn-ghost btn-xs"
               >
                 <HiX />
               </button>
             )}
           </div>
+
+          <select
+            className="select select-bordered select-sm"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name-asc">Name A–Z</option>
+            <option value="name-desc">Name Z–A</option>
+          </select>
 
           {allTags.length > 0 && (
             <div className="flex items-center gap-2 flex-wrap">
@@ -317,7 +354,7 @@ const Videos = () => {
                     ? "badge-primary"
                     : "badge-ghost hover:badge-outline"
                 }`}
-                onClick={() => setFilterTag("")}
+                onClick={() => handleFilterTag("")}
               >
                 All
               </button>
@@ -329,7 +366,7 @@ const Videos = () => {
                       ? "badge-primary"
                       : "badge-ghost hover:badge-outline"
                   }`}
-                  onClick={() => setFilterTag(filterTag === tag ? "" : tag)}
+                  onClick={() => handleFilterTag(filterTag === tag ? "" : tag)}
                 >
                   {tag}
                 </button>
@@ -367,7 +404,7 @@ const Videos = () => {
 
       {/* ── Video Grid ── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {filtered.map((v) => {
+        {paginated.map((v) => {
           const embedUrl = extractEmbedUrl(v.url);
           const direct = isDirectVideo(v.url);
 
@@ -443,6 +480,16 @@ const Videos = () => {
           );
         })}
       </div>
+
+      {filtered.length > 0 && (
+        <Pagination
+          page={page}
+          perPage={perPage}
+          total={filtered.length}
+          onPageChange={setPage}
+          onPerPageChange={handlePerPage}
+        />
+      )}
 
       {/* ══════════════════════════════════════════════════
           Create / Edit Modal

@@ -14,11 +14,12 @@ import {
 import { useAuth } from "../../hooks/useAuth";
 import useAxios from "../../hooks/useAxios";
 import NoteEditor from "../../component/NoteEditor/NoteEditor";
+import Pagination from "../../component/Pagination/Pagination";
 
 const EMPTY_FORM = { title: "", content: "" };
 
 const Notes = () => {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const app = useAxios();
 
   const [notes, setNotes] = useState([]);
@@ -28,8 +29,11 @@ const Notes = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("newest");
   const [submitting, setSubmitting] = useState(false);
   const [viewNote, setViewNote] = useState(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(12);
 
   const fetchNotes = useCallback(async () => {
     try {
@@ -55,6 +59,26 @@ const Notes = () => {
       n.content?.toLowerCase().includes(q)
     );
   });
+
+  const sorted = [...filtered].sort((a, b) => {
+    if (sort === "name-asc")
+      return (a.title || "").localeCompare(b.title || "");
+    if (sort === "name-desc")
+      return (b.title || "").localeCompare(a.title || "");
+    if (sort === "oldest") return new Date(a.createdAt) - new Date(b.createdAt);
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+
+  const paginated = sorted.slice((page - 1) * perPage, page * perPage);
+
+  const handleSearch = (val) => {
+    setSearch(val);
+    setPage(1);
+  };
+  const handlePerPage = (val) => {
+    setPerPage(val);
+    setPage(1);
+  };
 
   const openCreate = () => {
     setEditId(null);
@@ -134,7 +158,7 @@ const Notes = () => {
     });
   };
 
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user && !authLoading) return <Navigate to="/login" replace />;
 
   if (loading) {
     return (
@@ -180,23 +204,36 @@ const Notes = () => {
 
       {/* Search */}
       {notes.length > 0 && (
-        <div className="input input-bordered flex items-center gap-2 max-w-sm mb-6 focus-within:ring-2 focus-within:ring-primary">
-          <HiSearch className="text-lg opacity-60 shrink-0" />
-          <input
-            type="text"
-            placeholder="Search notes..."
-            className="bg-transparent outline-none w-full"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          {search && (
-            <button
-              onClick={() => setSearch("")}
-              className="btn btn-ghost btn-xs"
-            >
-              <HiX />
-            </button>
-          )}
+        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+          <div className="input input-bordered flex items-center gap-2 flex-1 max-w-sm focus-within:ring-2 focus-within:ring-primary">
+            <HiSearch className="text-lg opacity-60 shrink-0" />
+            <input
+              type="text"
+              placeholder="Search notes..."
+              className="bg-transparent outline-none w-full"
+              value={search}
+              onChange={(e) => handleSearch(e.target.value)}
+            />
+            {search && (
+              <button
+                onClick={() => handleSearch("")}
+                className="btn btn-ghost btn-xs"
+              >
+                <HiX />
+              </button>
+            )}
+          </div>
+
+          <select
+            className="select select-bordered select-sm"
+            value={sort}
+            onChange={(e) => setSort(e.target.value)}
+          >
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="name-asc">Title A–Z</option>
+            <option value="name-desc">Title Z–A</option>
+          </select>
         </div>
       )}
 
@@ -227,9 +264,9 @@ const Notes = () => {
       )}
 
       {/* Notes Grid */}
-      {filtered.length > 0 && (
+      {paginated.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map((note) => (
+          {paginated.map((note) => (
             <div
               key={note._id}
               className="card bg-base-200 shadow-md hover:shadow-xl transition-all duration-300 group cursor-pointer"
@@ -269,6 +306,16 @@ const Notes = () => {
             </div>
           ))}
         </div>
+      )}
+
+      {filtered.length > 0 && (
+        <Pagination
+          page={page}
+          perPage={perPage}
+          total={filtered.length}
+          onPageChange={setPage}
+          onPerPageChange={handlePerPage}
+        />
       )}
 
       {/* Create / Edit Modal */}

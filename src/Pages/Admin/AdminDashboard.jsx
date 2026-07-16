@@ -75,7 +75,8 @@ const AdminDashboard = () => {
   const deletedVideos = data.videos.filter((v) => v.isDeleted).length;
   const deletedFiles = data.files.filter((f) => f.isDeleted).length;
   const deletedNotes = data.notes.filter((n) => n.isDeleted).length;
-  const totalDeleted = deletedImages + deletedVideos + deletedFiles + deletedNotes;
+  const totalDeleted =
+    deletedImages + deletedVideos + deletedFiles + deletedNotes;
 
   // Recent uploads (last 5)
   const recentUploads = [...data.uploads]

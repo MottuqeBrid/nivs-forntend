@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import Navbar from "../component/Navbar/Navbar";
 import Footer from "../component/Footer/Footer";
+import ScrollToTop from "../component/ScrollToTop/ScrollToTop";
 
 const HomeLayout = () => {
   return (
@@ -10,6 +11,7 @@ const HomeLayout = () => {
         <Outlet />
       </main>
       <Footer />
+      <ScrollToTop />
     </div>
   );
 };
